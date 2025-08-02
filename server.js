@@ -1,37 +1,47 @@
-const express = require('express');
-const app = express();
+const express = require("express")
+const app = express()
+const PORT = process.env.PORT || 3000
 
-// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC
-const cors = require('cors');
-app.use(cors({ optionSuccessStatus: 200 }));  // some legacy browsers choke on 204
+app.listen(PORT,()=>{
+  console.log(`you are using port ${PORT}`)
+})
+// if i didn't enter date I handle this
 
-// http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+app.get("/api",(req,res)=>{
+  const date = new Date()
+  const unix = date.getTime()
+  const utc = date.toUTCString()
+  res.json({unix:unix,utc:utc})
+})
 
-// Root endpoint. Display index file
-app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
+app.get("/api/:date?",(req,res)=>{
+const date_string = req.params.date
+let date;
+let unix;
+let uTc;
 
-// Handle returning a timestamp
-app.get('/api/timestamp/:date?', (req, res) => {
-    // Store our date response. This will default to the current datetime
-    let date = new Date();
 
-    // Check if the optional date parameter was provided
-    if (req.params.date) {
-        // Convert the date parameter to a string
-        let unixDate = +req.params.date;
-
-        // Check if the date passed is unix time. If it's not, use the date string provided
-        date = isNaN(unixDate) ? new Date(req.params.date) : new Date(unixDate);
-
-        // Check if the date created is valid. Throw an error if it's an invalid date
-        if (!(date instanceof Date) || isNaN(date.getTime())) return res.json({ error: "Invalid Date" });
-    }
-
-    // Return the unix and UTC time
-    return res.json({ unix: date.getTime(), utc: date.toUTCString() });
-});
-
-// Create a listener to handle requests
-const listener = app.listen(process.env.PORT, () => console.log('Your app is listening on port ' + listener.address().port));
+//case 1 if data is unix in millisecond
+ if(/^\d+$/.test(date_string)){
+date = new Date(parseInt(date_string))
+  }
+//case 2 otherwise correct date
+else{
+  date = new Date(date_string)
+const inputDate = date_string.split("-").map(Number)
+const fullyear = date.getFullYear()
+const monthYear = date.getMonth() + 1
+// validation this date we created
+if(inputDate[0] !==fullyear || inputDate[1]!==monthYear){
+  res.json({error:"invalid date"})
+  return
+}
+}
+if(!isNaN(date)){
+  unix = date.getTime()
+  uTc = date.toUTCString()
+  res.json({unix:unix,utc:uTc})
+}else{
+  res.json({error:"invalid date"})
+}
+})
