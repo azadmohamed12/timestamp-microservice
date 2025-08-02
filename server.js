@@ -19,15 +19,13 @@ const date_string = req.params.date
 let date;
 let unix;
 let uTc;
-//case 1 if date is not exist
-if(!date_string){
-  date = new Date(date_string)
-}
-//case 2 if data is unix in millisecond
- else  if(/^\d+$/.test(date_string)){
+
+
+//case 1 if data is unix in millisecond
+ if(/^\d+$/.test(date_string)){
 date = new Date(parseInt(date_string))
   }
-//case 3 otherwise correct date
+//case 2 otherwise correct date
 else{
   date = new Date(date_string)
 const inputDate = date_string.split("-").map(Number)
