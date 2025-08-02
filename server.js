@@ -14,7 +14,7 @@ app.get("/api",(req,res)=>{
   res.json({unix:unix,utc:utc})
 })
 
-app.get("/api/:date",(req,res)=>{
+app.get("/api/:date?",(req,res)=>{
 const date_string = req.params.date
 let date;
 let unix;
